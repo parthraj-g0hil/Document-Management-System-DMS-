@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+    setUploadProgress(0); // reset on new file
+  };
+
+  const handleUpload = () => {
+    if (!selectedFile) return;
+
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className={`app-container ${darkMode ? 'dark' : ''}`}>
+      <button className="toggle-btn" onClick={() => setDarkMode(!darkMode)}>
+        {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      </button>
+
+      <h1>Document Management System</h1>
+
+      <div className="upload-box">
+        <label htmlFor="fileInput">Choose a document:</label>
+        <input type="file" id="fileInput" onChange={handleFileChange} />
+
+        {selectedFile && (
+          <p className="file-name">Selected File: {selectedFile.name}</p>
+        )}
+
+        <button onClick={handleUpload}>Upload</button>
+
+        {uploadProgress > 0 && (
+          <progress value={uploadProgress} max="100" className="progress-bar" />
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
